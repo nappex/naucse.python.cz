@@ -34,7 +34,7 @@ plan:
   date: 2020-01-30
   materials:
   - lesson: pydata/pandas_types
-  - lesson: pydata/visualization basics
+  - lesson: pydata/visualization_basics
 
 - title: "Explorativní datová analýza a statistika jedné proměnné"
   slug: eda3
