@@ -1,0 +1,53 @@
+title: Python a jeho knihovny
+subtitle: Ostrava - podzim 2020
+time: 17:00–19:00
+default_time:
+  start: '17:00'
+  end: '19:00'
+place: Tieto Towers, 28. října 3346/91, Moravská Ostrava, Ostrava
+description: Úvod do použití Pythonu v různých oblastech IT.
+long_description: |
+    **Toto je experimentální běh kurzu. Prosíme o shovívavost a trpělivost.**
+    Tady najdeš všechny materiály k ostravské verzi kurzu Python a jeho knihovny.
+    Materiály budou přibývat postupně během kurzu a v závislosti na tom, o co bude největší zájem.
+    Budeme rádi za jakoukoli zpětnou vazbu, návrhy na doplnění či zkrácení materiálů atp.
+vars:
+  user-gender: f
+  pyladies: true
+  coach-present: true
+
+plan:
+- title: "Úvodní hodina, představení kurzu a dekorátory"
+  slug: decorators
+  date: 2020-09-09
+  materials:
+  - lesson: fast-track/install
+  - lesson: intro/decorators
+
+- title: "Soubborové systémy a cesty — pathlib"
+  slug: pathlib
+  date: 2020-09-16
+  materials:
+  - lesson: fast-track/filesystem
+  - lesson: intro/pathlib
+
+- title: "Rozhraní pro příkazovou řádku"
+  slug: cli
+  date: 2020-09-23
+  materials:
+  - lesson: intro/click
+  - lesson: intro/argparse
+
+- title: "Weboví klienti — Requests"
+  slug: requests
+  date: 2020-09-30
+  materials:
+  - lesson: fast-track/http
+  - lesson: intro/requests
+
+- title: "Webové aplikace — Flask"
+  slug: flask
+  date: 2020-10-07
+  materials:
+  - lesson: intro/flask
+  - lesson: intro/deployment
