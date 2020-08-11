@@ -24,7 +24,7 @@ plan:
   - lesson: fast-track/install
   - lesson: intro/decorators
 
-- title: "Soubborové systémy a cesty — pathlib"
+- title: "Souborové systémy a cesty — pathlib"
   slug: pathlib
   date: 2020-09-16
   materials:
