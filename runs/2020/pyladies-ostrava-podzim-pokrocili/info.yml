@@ -51,3 +51,7 @@ plan:
   materials:
   - lesson: intro/flask
   - lesson: intro/deployment
+
+- title: "Předpokládaný konec kurzu"
+  slug: end
+  date: 2020-12-09
