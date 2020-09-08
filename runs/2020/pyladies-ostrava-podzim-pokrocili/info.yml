@@ -10,7 +10,8 @@ long_description: |
     **Toto je experimentální běh kurzu. Prosíme o shovívavost a trpělivost.**
     Tady najdeš všechny materiály k ostravské verzi kurzu Python a jeho knihovny.
     Materiály budou přibývat postupně během kurzu a v závislosti na tom, o co bude největší zájem.
-    Budeme rádi za jakoukoli zpětnou vazbu, návrhy na doplnění či zkrácení materiálů atp.
+    Budeme rádi za jakoukoli [zpětnou vazbu](https://zpetnovazebnik.herokuapp.com/2020-pyladies-ostrava-podzim-pokrocili/),
+    návrhy na doplnění či zkrácení materiálů atp.
 vars:
   user-gender: f
   pyladies: true
