@@ -38,7 +38,7 @@ Unix je operační systém, vytvořený v sedmdesátých letech, ze kterého vyc
 dnešní systémy Linux, macOS a další.
 Základní principy, o kterých bude řeč tady, se od dob Unixu většinou
 příliš nezměnily.
-A tak když v těchto materiákech uvidíš jméno „Unix“, jde o něco společné pro
+A tak když v těchto materiálech uvidíš jméno „Unix“, jde o něco společné pro
 Linux i macOS.
 Hlavní rozdíly mezi Linuxem a macOS jsou v konvencích – např. na Linuxu se
 místo pro domovské adresáře jmenuje většinou `/home`, kdežto na macOS `/Users`.
@@ -65,7 +65,7 @@ představí běžný uživatel) a adresáře.
 
 ## Cesty
 
-Abys mohl/a najít nějaký soubor, potřebuješ znát jeho jméno a adresář,
+Abys mohl{{a}} najít nějaký soubor, potřebuješ znát jeho jméno a adresář,
 který ten soubor obsahuje.
 Abys pak mohl/a najít ten adresář, musíš opět znát jméno adresáře a adresář,
 který ho obsahuje.
@@ -88,8 +88,9 @@ Obdobná cesta na Windows by mohla být třeba:
 `C:\Users\Jana\Documents\archiv.tar.gz`
 
 Tahle cesta začíná na disku `C:`.
-Windows mají na rozdíl od Unixu zvláštní souborový systém pro každý disk,
-a tak mají víc kořenových adresářů – třeba `C:\` a `D:\`.
+Windows mají na rozdíl od Unixu zvláštní kořenový adresář pro
+každý disk – třeba C:\ a D:\ – zatímco na Unixu je hlavní kořenový adresář
+jen jeden a disky jsou v něm připojené jako speciální adresáře.
 Dál je to podobné jako na Unixu, jen oddělovač adresářů je zpětné lomítko
 místo obyčejného.
 

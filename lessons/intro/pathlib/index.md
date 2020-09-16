@@ -8,7 +8,7 @@ Základní práci se soubory – čtení z nich a psaní do nich – rozebírá
 # Otevření textového souboru "basnicka.txt" pro čtení
 with open('basnicka.txt', encoding='utf-8') as soubor:
     # Přečtení obsahu
-    contents = soubor.read()
+    obsah = soubor.read()
 
 # Velikost souboru
 print(len(soubor))
@@ -23,7 +23,7 @@ Když ale potřebuješ s cestami k souborům pracovat víc,
 řetězce jsou docela nepohodlné.
 A navíc je problém pamatovat na všechny různé případy, které můžou nastat.
 
-Zkus pro příkad napsat funkce, které dostanou cestu k souboru a:
+Zkus pro příklad napsat funkce, které dostanou cestu k souboru a:
 
 * `vrat_casti` rozdělí cestu na jednotlivé adresáře (a vrátí je jako seznam),
 * `vrat_priponu` vrátí příponu souboru.
@@ -251,7 +251,7 @@ PosixPath('myproject/README.xz')
 ## Zkoumání disku
 
 Všechno uvedené výše jsou čistě „textové“ operace – pracují jen se jmény.
-Soubor `archiv.zip` (ani jiné) počítači mít, aby ses dostal{{a}} k příponě
+Soubor `archiv.zip` (ani jiné soubory) není třeba na počítači mít, aby ses dostal{{a}} k příponě
 nebo ke jménům nadřazených adresářů.
 
 > [note]
@@ -474,7 +474,6 @@ soubory/hraz.jpeg
 soubory/README
 ```
 
-{#
 
 ## Glob Glob
 
@@ -501,7 +500,7 @@ V šabloně můžeš použít `*`, které odpovídá 0 a více písmenům
  PosixPath('soubory/hraz.jpeg')]
 ```
 
-… nebo ?, což odpovídá jednomu písmenu:
+… nebo `?`, což odpovídá jednomu písmenu:
 
 ```pycon
 >>> # Slovo na čtyři, první je `h` a třetí `a`
@@ -552,15 +551,13 @@ S pomocí ** se často hledají soubory s danou příponou:
  PosixPath('soubory/texty/cizojazycne/witch.txt')]
 ```
 
-#}
-
 
 ## Strom adresářů – rekurze
 
 Adresáře, podadresáře a soubory v nich tvoří strukturu, na kterou se často
 používají rekurzivní funkce.
 
-Tady je funkce `vypis_soubory`, která ypíše všechny soubory v daném adresáři.
+Tady je funkce `vypis_soubory`, která vypíše všechny soubory v daném adresáři.
 Před každé jméno dá odrážku `-`, aby to líp vypadalo:
 
 ```python
