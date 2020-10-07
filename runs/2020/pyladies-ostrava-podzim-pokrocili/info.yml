@@ -53,6 +53,12 @@ plan:
   - lesson: intro/flask
   - lesson: intro/deployment
 
+- title: "Kontrola typů — Mypy"
+  slug: mypy
+  date: 2020-10-14
+  materials:
+  - lesson: intro/mypy
+
 - title: "Předpokládaný konec kurzu"
   slug: end
   date: 2020-12-09
