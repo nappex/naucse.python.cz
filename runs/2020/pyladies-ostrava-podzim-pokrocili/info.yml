@@ -59,6 +59,12 @@ plan:
   materials:
   - lesson: intro/mypy
 
+- title: Vlákna a procesy — paralelní programování
+  slug: parallel
+  date: 2020-10-20
+  materials:
+   - lesson: intro/parallel_programming
+
 - title: "Předpokládaný konec kurzu"
   slug: end
   date: 2020-12-09
