@@ -61,9 +61,15 @@ plan:
 
 - title: Vlákna a procesy — paralelní programování
   slug: parallel
-  date: 2020-10-20
+  date: 2020-10-21
   materials:
    - lesson: intro/parallel_programming
+
+- title: Paralelní programování podruhé
+  slug: parallel2
+  date: 2020-10-28
+  materials:
+   - lesson: intro/locks_queues_semaphores
 
 - title: "Předpokládaný konec kurzu"
   slug: end
