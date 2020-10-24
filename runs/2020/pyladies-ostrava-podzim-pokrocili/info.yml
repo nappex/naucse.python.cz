@@ -67,7 +67,7 @@ plan:
 
 - title: Paralelní programování podruhé
   slug: parallel2
-  date: 2020-10-28
+  date: 2020-11-04
   materials:
    - lesson: intro/locks_queues_semaphores
 
