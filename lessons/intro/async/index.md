@@ -1,47 +1,12 @@
-
-Ve cvičení použijeme ukázku z PyQt5.
-Máte-li ještě virtualenv s nainstalovaným PyQt, použijte ho, případně ho
-podle [lekce o PyQt] nainstalujte znovu.
-
-K PyQt si přiinstalujte knihovnu `quamash`:
-
-```console
-$ python -m pip install quamash
-```
-
-Nejde-li to, nevadí – nezbytné dnes PyQt nebude.
-
-[lekce o PyQt]: {{ lesson_url('intro/pyqt') }}
-
-
-Navíc si nainstalujte knihovnu `aiohttp`:
-
-```console
-$ python -m pip install aiohttp
-```
-
-{% if not var('coach-present') %}
----
-
-> [note]
-> V minulosti byly na této stránce popsány i [generátory](../../advanced/generators/).
-> Neovládáte-li je ještě, přečtěte si o nich.
-{% endif %}
-
----
-
-
 AsyncIO
 =======
 
-Pojďme si povídat o souběžnosti – možnostech, jak nechat počítač dělat víc
-úloh věcí najednou.
+Po vláknem a procesech přichází na řadu AsyncIO. AsyncIO je relativně nový způsob,
+jak v Pythonu psát konkurenční programy. Ano, správně, konkurenční programy — v tomto
+případě totiž zůstaneme jen s jedním vláknem a jedním procesem, ale i přes to budeme
+mít relativně hodně možností, jak naši aplikaci zrychlit.
 
-Jak jsme si řekli v [lekci o C API](../cython/), Python má globální zámek, takže pythonní kód
-může běžet jen v jednom vlákně najednou.
-Taky jsme si řekli, že to většinou příliš nevadí: typický síťový nebo GUI program
-stráví hodně času čekáním na události (odpověď z internetu, kliknutí myší atp.)
-a u tohoto čekání není potřeba držet zámek zamčený.
+Pojďme ale pěkně popořádku.
 
 Servery typicky při zpracovávání požadavku stráví *většinu* času síťovou komunikací.
 Proto se často spouští několik vláken nebo přímo procesů najednou, aby se mohl vytížit
@@ -123,11 +88,6 @@ postupně dostávají do `asyncio`.)
 
 Interně je `asyncio` postavené na konceptu *futures* inspirovaných Tornado/Twisted,
 ale jeho „hlavní“ API je postavené na *coroutines* podobných generátorům.
-
-Od Pythonu verze 3.5 používá `asyncio` místo „normálních“ generátorů
-speciální syntaxi, která umožňuje kombinovat asynchronní funkce s příkazy
-`for` a `with` nebo i `yield`.
-Tuto syntaxi použijeme i tady; máte-li starší Python, podívejte se na potřebné změny uvedené níže.
 
 Jak vypadá taková asynchronní funkce?
 Definuje se pomocí `async def` místo `def`, a může používat příkaz `await`.
@@ -224,7 +184,7 @@ Event Loop
 ----------
 
 Knihovna `asyncio` nám dává k dispozici *smyčku událostí*, která se, podobně jako
-`app.exec` v Qt, stará o plánování jednotlivých úloh.
+`pyglet.app.run` v Pygletu, stará o plánování jednotlivých úloh.
 Smyček událostí může být více.
 Tradiční způsob je, že každé vlákno může mít vlastní smyčku událostí,
 kterou získáme pomocí `asyncio.get_event_loop` a pak ji můžeme spustit dvěma
@@ -415,6 +375,121 @@ async with database.transaction_context():
         handle(row)
 ```
 
+Praktická ukázka s aiohttp
+--------------------------
+
+Výše popsané principy si ukážeme na praktickém příkladu. Knihovna `aiohttp` je
+navržena tak, aby nám umožnila komunikaci přes HTTP protokol s využitím všech
+možností `asyncio` a my ji porovnáme se známou knihovnou `requests`.
+
+> [note]
+> [Zde](https://github.com/aio-libs/) je k dispozici hezká sbírka knihoven
+> implementující asynchronní komunikaci pro mnoho různých protokolů a databází.
+
+Mějme jednoduchý program, který provede celkem 10 HTTP požadavků, jejichž vyřízení
+bude trvat různě dlouhou dobu. Server [httpbin.org](https://httpbin.org/) je k takovým hrátkám
+ideální, protože nám umožňuje do značné míry ovlivnit jeho chování.
+
+```python
+import requests
+from random import shuffle
+
+seconds = [1] * 3 + [2] * 3 + [3] * 3 + [4]
+shuffle(seconds)
+
+def fetch(session, index, delay):
+    response = session.get(f"https://httpbin.org/delay/{delay}")
+    html = response.text
+    print(index, delay, response.status_code)
+
+def main():
+    with requests.Session() as session:
+        for index, delay in enumerate(seconds):
+            fetch(session, index, delay)
+
+main()
+```
+
+Z celkem deseti požadavků budou po třech trvat jednu, dvě nebo tři vteřiny a poslední pak
+zabere vteřiny čtyři. Hlavní funkce nám vytvoří jednu společnou `Session` a zavolá desetkrát
+funkci `fetch`, která se postará o samotný HTTP požadavek a výpis informací.
+Výsledek je následující:
+
+```
+0 3 200
+1 1 200
+2 1 200
+3 2 200
+4 3 200
+5 1 200
+6 4 200
+7 3 200
+8 2 200
+9 2 200
+```
+
+I když některé požadavky trvají jen jednu vteřinu, provedou se všechny sekvenčně bez ohledu na
+svou časovou náročnost. Celkový čas čekání na odpovědi testovacího serveru je 22 s a celkový běh
+ukázkového programu je pak ještě o nějakou tu vteřinu delší.
+
+Následuje implementace stejného problému s využitím `asyncio` a `aiohttp`:
+
+```python
+import aiohttp
+import asyncio
+from random import shuffle
+
+seconds = [1] * 3 + [2] * 3 + [3] * 3 + [4]
+shuffle(seconds)
+
+async def fetch(session, index, delay):
+    async with session.get(f"https://httpbin.org/delay/{delay}") as response:
+        html = await response.text()
+        print(index, delay, response.status)
+
+async def main():
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        for index, delay in enumerate(seconds):
+            tasks.append(asyncio.create_task(fetch(session, index, delay)))
+        await asyncio.gather(*tasks)
+
+asyncio.run(main())
+```
+
+Základ je stejný, jen je tam navíc trochu `async` a `await`. Opět máme jednu `ClientSession`
+pro všechny požadavky a jednu hlavní asynchronní funkci, která se stará o všechny ostatní. V tomto
+příkladu nám funkce `main` naplánuje jednotlivé požadavky jako samostatné úlohy a na konci počká
+na jejich dokončení.
+
+Jednotlivé `async with` nám zajistí nejen to, že provádění požadavků je asynchronní
+a tedy je možné v tomto okamžiku předat kontrolu jiné úloze, ale také to, že bude vše po provedení požadavku
+resp. ukončení práce s `ClientSession` správně ukončeno.
+
+Zajímavý je i rozdíl v získávání obsahu odpovědi od serveru. `requests` v rámci volání metody `get`
+provede stažení hlaviček i obsahu odpovědi a její dekódování — vše najednou. `aiohttp` stáhne v rámcí volání `get` jen
+hlavičky odpovědi od serveru a stažení obsahu odpovědi je zcela samostatná asynchronní operace.
+
+Výstup asynchronního programu je následující:
+
+```
+3 1 200
+0 1 200
+7 1 200
+2 2 200
+9 2 200
+1 2 200
+4 3 200
+8 3 200
+5 3 200
+6 4 200
+```
+
+Jednotlivé požadavky jsou samostatné úlohy a tak je jejich zpracování závislé jen na
+rychlosti odpovědi od serveru. Celkem se v jednotlivých požadavcích dohromady čekalo
+na odpovědi od serveru stejných 22 vteřin, ale celkový běh programu skončil za méně než 5 vteřin.
+
+Obsáhlejší popis a další příklady naleznete samozřejmě v [dokumentaci](https://docs.aiohttp.org/en/stable/).
 
 A další
 -------
@@ -451,96 +526,3 @@ Další zajímavá implementace je [Quamash], která pod standardním `asyncio` 
 smyčku událostí z Qt.
 Umožňuje tak efektivně zpracovávat Qt události zároveň s asynchronními funkcemi
 známými z `asyncio`.
-
-*Event loop* z `quamash` je potřeba na začátku programu naimportovat a nastavit
-jako hlavní smyčku událostí, a poté ji, místo Qt-ovského `app.exec()`, spustit.
-Jednotlivé asynchronní funkce se pak používají jako v čistém `asyncio`:
-pomocí `asyncio.ensure_future`, `await`, atd.
-
-[uvloop]: https://pypi.org/project/uvloop/
-[Quamash]: https://pypi.org/project/Quamash/
-
-Ukázka:
-
-```python
-import asyncio
-
-from PyQt5 import QtGui, QtWidgets
-from quamash import QEventLoop
-
-app = QtWidgets.QApplication([])
-loop = QEventLoop(app)
-asyncio.set_event_loop(loop)
-
-display = QtWidgets.QLCDNumber()
-display.setWindowTitle('Stopwatch')
-
-display.show()
-
-async def update_time():
-    value = 0
-    while True:
-        display.display(value)
-        await asyncio.sleep(1)
-        value += 1
-
-asyncio.ensure_future(update_time())
-
-loop.run_forever()
-```
-
-
-Komunikace
-----------
-
-Ono `io` v `asyncio` naznačuje, že je tato knihovna dělaná především na
-vstup a výstup – konkrétně na komunikaci přes síť (případně s jinými procesy).
-
-Ke komunikaci používá `asyncio` tři úrovně abstrakce: `Transport`, `Protocol`
-a `Stream`.
-V krátkosti si je tu popíšeme; detaily pak najdete v dokumentaci (je pro nás
-totiž mnohem důležitější abyste pochopili principy, než abyste uměli konkrétní
-API, které lze dohledat v dokumentaci).
-
-Transporty a protokoly jsou postaveny na konceptech knihovny `Twisted`.
-
-`Transport` zajišťuje samotné posílání bajtů mezi počítači (transportní vrstvu), kdežto
-`Protocol` implementuje nějaký aplikační protokol.
-`Transport` většinou nepíšeme sami, použijeme existující.
-V `asyncio` jsou zabudované transporty pro TCP, UDP a SSL.
-`Protocol` je pak použit pro implementaci konkrétních protokolů jako
-`HTTP`, `FTP` a podobně.
-V dokumentaci najdete podrobnější popis včetně [příkladů][transport-proto-examples].
-
-[transport-proto-examples]: https://docs.python.org/3/library/asyncio-protocol.html#tcp-echo-server-protocol
-
-Kromě toho existuje i „Stream API“ založené na asynchronních funkcích.
-Většinou platí, že operace *otevření*, *čtení*, *flush* a *zavření* Streamu
-jsou asynchronní funkce (v dokumentaci označované jako *coroutines*), a je
-tedy nutné je použít s `await`; oproti tomu *zápis* asynchronní není – data
-se uloží do bufferu a pošlou se, až to bude možné.
-
-Typicky ale místo čistého `asyncio` použijeme existující knihovnu.
-Tady je příklad z knihovny `aiohttp`, která implementuje server a klienta
-pro HTTP:
-
-```python
-import asyncio
-import aiohttp
-
-async def main(url):
-    # Use a a session
-    session = aiohttp.ClientSession()
-    async with session:
-
-        # Get the response (acts somewhat like a file; needs to be closed)
-        async with session.get(url) as response:
-
-            # Fetch the whole text
-            html = await response.text()
-            print(html)
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main('http://python.cz'))
-loop.close()
-```

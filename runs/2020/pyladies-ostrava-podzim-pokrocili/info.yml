@@ -71,11 +71,16 @@ plan:
   materials:
    - lesson: intro/locks_queues_semaphores
 
-- title: Generátory a asyncio
-  slug: async
+- title: Generátory, iterátory a iterables
+  slug: generators
   date: 2020-11-11
   materials:
    - lesson: advanced/generators
+
+- title: AsyncIO
+  slug: async
+  date: 2020-11-18
+  materials:
    - lesson: intro/async
 
 - title: "Předpokládaný konec kurzu"
