@@ -83,6 +83,12 @@ plan:
   materials:
    - lesson: intro/async
 
+- title: Regulární výrazy
+  slug: regex
+  date: 2020-11-25
+  materials:
+   - lesson: intro/regex
+
 - title: "Předpokládaný konec kurzu"
   slug: end
   date: 2020-12-09
