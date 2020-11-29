@@ -2,11 +2,9 @@ Testování
 =========
 
 V tomto cvičení se budeme zabývat automatickým testováním kódu.
-Modul unittest ze standardní knihovny už byste měli znát,
-co to jsou jednotkové testy a k čemu slouží tedy rovnou přeskočím.
 
 > [note]
-> Pokud základy testování neznáte, projděte si
+> Pokud neznáte základy testování, projděte si
 > [začátečnickou lekci o testování]({{ lesson_url('beginners/testing') }}).
 > Obsah se zčásti překrývá, ale základní principy jsou tam vysvětleny trošku
 > podrobněji.
@@ -14,12 +12,42 @@ co to jsou jednotkové testy a k čemu slouží tedy rovnou přeskočím.
 Pokud si chcete přečíst krátký text o tom, jak testovat, zkuste [blogový
 zápisek Michala Hořejška](http://blog.horejsek.com/matka-moudrosti-jak-testovat).
 
+Začneme jednoduchou ukázkou z modulu `isholiday`.
+Modul `isholiday` Ondřeje Caletky obsahuje informace o českých svátcích a je
+ke stažení [zde](https://gist.github.com/oskar456/e91ef3ff77476b0dbc4ac19875d0555e).
+
+unittest
+--------
+
+Nejprve ukázka použití modulu `unittest` ze standardní knihovny Pythonu, abychom
+následně měli s čím srovnávat.
+
+```python
+import isholiday
+import unittest
+
+
+class TestIsHoliday(unittest.TestCase):
+    def test_xmas_2016(self):
+        holidays = isholiday.getholidays(2016)
+        self.assertIn((24, 12), holidays)
+```
+
+Test uložíme do souboru `tests/test_holidays_unittest.py` a spustíme pomocí modulu `unittest` takto:
+```console
+$ python -m unittest tests/test_holidays_unittest.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+```
+
 pytest
 ------
 
-Rovnou se podíváme na velmi oblíbený balíček [pytest], který oproti standardnímu
-unittestu přináší mnoho výhod. Začneme jednoduchou ukázkou z modulu `isholiday`
-z [cvičení o modulech]({{ lesson_url('intro/distribution') }}).
+A teď už se podíváme na velmi oblíbený balíček [pytest], který oproti standardnímu
+unittestu přináší mnoho výhod.
 
 ```python
 import isholiday
@@ -53,7 +81,7 @@ Všimněte si několika věcí:
 
  * V testovacím souboru stačí mít funkci pojmenovanou `test_*` a `pytest` pozná,
    že se jedná o test.
- * V ukázce je použit obyčejný `assert`, nikoliv metoda z `unittest`.
+ * V ukázce je použit obyčejný `assert`, žádná speciální metoda.
 
 Co se má testovat, se pytestu dá zadat pomocí argumentů příkazové řádky.
 Můžou to být jednotlivé soubory nebo adresáře, ve kterých pytest
@@ -61,17 +89,6 @@ rekurzivně hledá všechny soubory začínající na `test_`.
 Vynecháme-li argumenty úplně, hledá rekurzivně v aktuálním adresáři.
 (To se často hodí, ale obsahuje-li aktuální adresář i vaše virtuální prostředí,
 pytest prohledá i to a často v něm najde neprocházející testy.)
-
-> [note]
-> Pokud pytest nemůže naimportovat váš modul, můžete udělat několik věcí:
-> 
->  * Nainstalovat svůj balíček (například v režimu `develop`).
->  * Nastavit proměnnou prostředí `PYTHONPATH` na `.`.
-> 
-> Testovat nainstalovaný balíček je výhodnější – ověříte zároveň, že
-> nainstalovaný modul se chová dle očekávání. Je dobré testy psát tak, aby
-> šly spouštět z jakéhokoliv adresáře, a pro jistotu je spouštět odjinud,
-> než z adresáře s kódem. Odhalíte tím často balíčkovací chyby.
 
 Pytest upravuje chování assertu, což oceníte především, pokud test selže:
 
@@ -450,7 +467,7 @@ která čte soubor formátu `/etc/passwd`, ale jméno souboru jí předat argume
 
 > [note]
 > Mohl by vás zajímat záznam z přednášky [Should I mock or should I not?]
-> z konference [PyCon CZ] 2017. V přednášce se věnuji různým způsobům podvádění
+> z konference [PyCon CZ] 2017. V přednášce se Miro Hrončok věnuje různým způsobům podvádění
 > při psaní testů.
 
 [PyCon CZ]: https://cz.pycon.org/
@@ -540,7 +557,7 @@ Při práci s webovými API často létají vzduchem citlivé údaje jako tokeny
 Vyvstávají dvě otázky:
 
  1. Jak umožnit spuštění testů bez vlastního tokenu?
- 2. Jak citlivé údaje skrýt v kazetách a nedávat je do do gitu?
+ 2. Jak citlivé údaje skrýt v kazetách a nedávat je do gitu?
 
 Na obě otázky se pokusím odpovědět jedním okomentovaným kódem:
 
@@ -604,7 +621,7 @@ v [dokumentaci](http://betamax.readthedocs.io/en/latest/matchers.html).
 
 > [note]
 > Mohl by vás zajímat záznam z přednášky [If it Moves, Test it Anyway]
-> z konference [PyCon CZ] 2016. V přednášce se věnuji různým způsobům, jak
+> z konference [PyCon CZ] 2016. V přednášce se Miro Hrončok věnuje různým způsobům, jak
 > testovat webové API klienty v Pythonu.
 
 [If it Moves, Test it Anyway]: https://www.youtube.com/watch?v=iFqF5IaWfy0
@@ -639,7 +656,7 @@ Proto nelze použít přímo `response.text`; text dostaneme pomocí
 Testování aplikací v clicku
 ---------------------------
 
-Podobně funguje [testování aplikací v clikcu](http://click.pocoo.org/6/testing/).
+Podobně funguje [testování aplikací v clicku](http://click.pocoo.org/6/testing/).
 Click obsahuje třídu `CliRunner`, která pomáhá s testováním:
 
 ```python
@@ -690,108 +707,8 @@ Ve druhém případě mějte na paměti, že pytest pouští testy jako samostat
 moduly, ne jako součást vašeho balíčku.
 Relativní importy (`from ..appmodule import xyz`) v testech nebudou fungovat.
 
-Pozor na to, aby testy byly součástí archivu s balíčkem (`setup.py sdist`), ale
-pokud zvolíte první variantu umístění, aby se neinstalovaly (`setup.py install`),
-protože by tam kolidovaly s ostatními testy z jiných balíčků.
-
 Případné soubory potřebné k testování bývá zvykem dávat do složky `fixtures` ve
 složce s testy.
-
-Spouštění testů pomocí `setup.py test`
---------------------------------------
-
-Standardně se testy v Pythonu nespouští pomocí `python -m pytest`, ale
-`python setup.py test`, což funguje i s jinými nástroji než je pytest.
-Pokud pytest používáme, je proto dobré `setup.py` naučit spouštět pytest.
-
-K tomu potřebujeme nakonfigurovat závislosti: v `setup_requires` musí být
-`pytest-runner` a v `tests_require` pak `pytest` a další testovací závislosti
-(`flexmock`, `betamax`...).
-
-```python
-from setuptools import setup
-
-setup(
-    ...,
-    setup_requires=['pytest-runner', ...],
-    tests_require=['pytest', ...],
-    ...,
-)
-```
-
-a přidat následující sekci do `setup.cfg`:
-
-```
-[aliases]
-test=pytest
-```
-
-Příkaz `python setup.py test` by měl fungovat, ale neočekává se, že bude
-podporovat další argumenty pytestu (jako `-v`).
-Na to uživatel spustí pytest samotný.
-
-Další informace jsou v [dokumentaci pytestu](http://doc.pytest.org/en/latest/goodpractices.html#integrating-with-setuptools-python-setup-py-test-pytest-runner).
-
-Travis CI
----------
-
-Vaše testy nemusí běžet jen u vás na počítači, ale můžete je pouštět automaticky
-na službě Travis CI při každém pushnutí na GitHub.
-
-Travis CI je zadarmo pro veřejné repozitáře na [travis-ci.org], pro soukromé
-repozitáře je placená verze na [travis-ci.com]. V rámci studentského balíčku
-můžete i tuto verzi využít zdarma.
-
-Přihlaste se na [travis-ci.com] pomocí GitHubu (vpravo nahoře).
-Pak opět vpravo nahoře zvolte [Accounts](https://travis-ci.com/profile)
-a povolte Travis pro váš repozitář.
-
-Do repozitáře přidejte soubor `.travis.yml`:
-
-```yaml
-language: python
-python:
-- '3.6'
-install:
-- python setup.py install
-script:
-- python setup.py test
-```
-
-Uvedený příklad je pro Python 3.6.
-Pro Python 3.7 je třeba nastavit novější verzi Ubuntu:
-
-```yaml
-language: python
-python:
-- '3.7'
-dist: xenial
-install:
-- python setup.py install
-script:
-- python setup.py test
-```
-
-Verze Pythonu lze kombinovat:
-
-```yaml
-language: python
-python:
-- '3.6'
-- '3.7'
-dist: xenial
-install:
-- python setup.py install
-script:
-- python setup.py test
-```
-
-Po pushnutí by se na Travisu měl automaticky spustit test.
-Více informací o použití pro Python najdete
-v [dokumentaci](https://docs.travis-ci.com/user/languages/python/).
-
-[travis-ci.org]: https://travis-ci.org/
-[travis-ci.com]: https://travis-ci.com/
 
 Kvíz
 ----
