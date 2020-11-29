@@ -122,6 +122,9 @@ Skupiny jsou v rámci regulárního výrazu automaticky číslované od jedničk
 pomocí `\cislo` bez nutnosti se opakovat.
 
 Například zápisu `(a{3}) \1` odpovídá jen jeden řetězec `aaa aaa`, protože `\1` je odkaz na skupinu se třemi výskyty znaku "a".
+Odkaz na skupinu neopovídá konkrétnímu formátu regulárního výrazu, ale odpovídá řetězci, který tento regulární výraz odchytí.
+Nemůžeme tedy tvrdit, že platí `r"([0-9]{1,3}):\1" == r"([0-9]{1,3}):([0-9]{1,3})"`.
+Příklad máme-li regulární výraz `([0-9]{1,3}):\1`, tak tento výraz neodchytává stringy jako `12:10` nebo `2:345`, ale **pouze** `12:12` nebo `2:2`.
 
 Snad posledním znakem často používaným v kombinaci se skupinou v kulatých závorkách je `|` (svislá čára). Ta
 umožňuje od sebe oddělit několik regulárních výrazů nebo jejich částí, přičemž může platit kterýkoli z nich.
